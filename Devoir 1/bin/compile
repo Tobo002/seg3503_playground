@@ -1,0 +1,19 @@
+#!/bin/bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+JUNIT="$ROOT/lib/junit-platform-console-standalone-1.7.1.jar"
+DIST="$ROOT/dist"
+
+if [[ ! -f "$JUNIT" ]]; then
+  echo "JUnit jar not found: $JUNIT" >&2
+  echo "Expected: lib/junit-platform-console-standalone-1.7.1.jar inside this project." >&2
+  exit 1
+fi
+
+mkdir -p "$DIST"
+javac -encoding UTF-8 -d "$DIST" -cp "$JUNIT" \
+  "$ROOT/src/validator/ISBNValidate.java" \
+  "$ROOT/test/ISBNValidateTest.java"
+
+echo "Compiled to $DIST"

@@ -1,0 +1,8 @@
+#!/bin/bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+JUNIT="$ROOT/lib/junit-platform-console-standalone-1.7.1.jar"
+
+"$ROOT/bin/compile"
+java -jar "$JUNIT" --class-path "$ROOT/dist" --select-package test

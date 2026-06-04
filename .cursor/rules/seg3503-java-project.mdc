@@ -1,0 +1,60 @@
+---
+description: Layout and setup for new standalone Java projects in seg3503_playground
+alwaysApply: true
+---
+
+# SEG3503 — standalone Java projects
+
+This repo holds **independent** course projects. A project must not reference paths in sibling folders (e.g. no `../Lab1/...`).
+
+## Required layout
+
+```
+<ProjectName>/
+  README.md
+  .gitignore          # ignore dist/, out/, *.class — not lib/*.jar
+  .vscode/settings.json
+  lib/                # third-party jars (e.g. JUnit), committed or documented
+  src/                # production sources; package = folder path under src/
+  test/               # tests; package = folder path under test/
+  dist/               # compiler output (generated)
+  bin/compile         # builds all src + test into dist/
+  bin/run-tests       # compile then run JUnit console launcher
+```
+
+## `.vscode/settings.json` (inside the project)
+
+Paths are relative to **that project folder** (open the project folder in the editor):
+
+```json
+{
+  "java.project.sourcePaths": ["."],
+  "java.project.outputPath": "dist",
+  "java.project.referencedLibraries": ["lib/**/*.jar"]
+}
+```
+
+Do **not** put project-specific `java.project.*` settings in the repo-root `.vscode/`.
+
+## `bin/compile` pattern
+
+- Resolve `ROOT` as parent of `bin/`.
+- JUnit jar: `$ROOT/lib/junit-platform-console-standalone-1.7.1.jar` only.
+- `javac -encoding UTF-8 -d "$ROOT/dist" -cp "$JUNIT"` listing every `.java` file (or use `-sourcepath` + explicit files).
+- Package rule: if `test/Foo.java` declares `package test;`, project root must be on the source path (use `"."` as source root), not `test/` alone.
+
+## `bin/run-tests` pattern
+
+- Call `bin/compile`, then `java -jar "$ROOT/lib/junit-platform-console-standalone-1.7.1.jar" --class-path "$ROOT/dist" --select-class <fully.qualified.TestClass>`.
+
+## JUnit dependency
+
+- Vendor `lib/junit-platform-console-standalone-1.7.1.jar` inside the project (same artifact as course Lab1).
+- Do not use environment variables or cross-project jar paths unless the user explicitly asks.
+
+## New project checklist
+
+1. Create folders: `src/`, `test/`, `lib/`, `bin/`, `dist/` (dist gitignored).
+2. Copy JUnit jar into `lib/`.
+3. Add `.gitignore`, `.vscode/settings.json`, `README.md`, `bin/compile`, `bin/run-tests`.
+4. Verify from project root: `./bin/compile` and `./bin/run-tests`.
